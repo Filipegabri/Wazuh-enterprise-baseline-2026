@@ -1,0 +1,127 @@
+<group name="sysmon,windows,enterprise_2026,">
+
+  <!-- 100001 - T1070.001 Clear Logs -->
+  <rule id="100001" level="12">
+    <if_group>sysmon_event_1</if_group>
+    <field name="win.eventdata.Image" type="pcre2">wevtutil\.exe|clear\-eventlog</field>
+    <description>Enterprise: Event Logs Cleared (T1070.001)</description>
+    <mitre><id>T1070.001</id></mitre>
+  </rule>
+
+  <!-- 100002 - T1053.005 Scheduled Task -->
+  <rule id="100002" level="12">
+    <if_group>sysmon_event_1</if_group>
+    <field name="win.eventdata.Image" type="pcre2">schtasks\.exe</field>
+    <field name="win.eventdata.CommandLine" type="pcre2">/create</field>
+    <description>Enterprise: Persistence via Scheduled Task (T1053.005)</description>
+    <mitre><id>T1053.005</id></mitre>
+  </rule>
+
+  <!-- 100003 - T1059.001 PowerShell Obfuscated -->
+  <rule id="100003" level="12">
+    <if_group>sysmon_event_1</if_group>
+    <field name="win.eventdata.Image" type="pcre2">powershell\.exe|pwsh\.exe</field>
+    <field name="win.eventdata.CommandLine" type="pcre2">-enc|FromBase64String|IEX|Invoke-Expression|bypass</field>
+    <description>Enterprise: Obfuscated PowerShell (T1059.001)</description>
+    <mitre><id>T1059.001</id></mitre>
+  </rule>
+
+  <!-- 100004 - T1003.001 LSASS Dump -->
+  <rule id="100004" level="15">
+    <if_group>sysmon_event_10</if_group>
+    <field name="win.eventdata.TargetImage" type="pcre2">lsass\.exe</field>
+    <description>Enterprise: LSASS Memory Dump - Credential Access (T1003.001)</description>
+    <mitre><id>T1003.001</id></mitre>
+  </rule>
+
+  <!-- 100005 - T1566.001 Office -> Shell -->
+  <rule id="100005" level="15">
+    <if_group>sysmon_event_1</if_group>
+    <field name="win.eventdata.ParentImage" type="pcre2">winword\.exe|excel\.exe|outlook\.exe</field>
+    <field name="win.eventdata.Image" type="pcre2">cmd\.exe|powershell\.exe|wscript\.exe</field>
+    <description>Enterprise: Office spawning shell - Phishing (T1566.001)</description>
+    <mitre><id>T1566.001</id></mitre>
+  </rule>
+
+  <!-- 100006 - T1105 LOLBins -->
+  <rule id="100006" level="12">
+    <if_group>sysmon_event_1</if_group>
+    <field name="win.eventdata.Image" type="pcre2">certutil\.exe|bitsadmin\.exe</field>
+    <field name="win.eventdata.CommandLine" type="pcre2">-urlcache|-download|/transfer</field>
+    <description>Enterprise: LOLBins download (T1105)</description>
+    <mitre><id>T1105</id></mitre>
+  </rule>
+
+  <!-- 100007 - T1048 Exfiltration -->
+  <rule id="100007" level="12">
+    <if_group>sysmon_event_1</if_group>
+    <field name="win.eventdata.Image" type="pcre2">rclone\.exe|megasync\.exe</field>
+    <description>Enterprise: Data Exfiltration Tool (T1048)</description>
+    <mitre><id>T1048</id></mitre>
+  </rule>
+
+  <!-- 100008 - T1087 AD Recon -->
+  <rule id="100008" level="10">
+    <if_group>sysmon_event_1</if_group>
+    <field name="win.eventdata.Image" type="pcre2">SharpHound\.exe|BloodHound</field>
+    <description>Enterprise: AD Reconnaissance (T1087)</description>
+    <mitre><id>T1087</id></mitre>
+  </rule>
+
+  <!-- 100009 - T1110 Brute Force -->
+  <rule id="100009" level="10" frequency="10" timeframe="120">
+    <if_matched_sid>5503</if_matched_sid>
+    <same_source_ip />
+    <description>Enterprise: Multiple authentication failures - Possible Brute Force (T1110)</description>
+    <mitre><id>T1110.001</id></mitre>
+  </rule>
+
+  <!-- 100010 - T1110 Brute Force Success -->
+  <rule id="100010" level="15">
+    <if_matched_sid>5501</if_matched_sid>
+    <if_matched_sid>100009</if_matched_sid>
+    <description>Enterprise: Brute Force Success - Account Compromise (T1110.001)</description>
+    <mitre><id>T1110.001</id></mitre>
+  </rule>
+
+  <!-- 100011 - T1021.001 RDP External -->
+  <rule id="100011" level="10">
+    <if_sid>5501</if_sid>
+    <field name="win.eventdata.LogonType">10</field>
+    <description>Enterprise: Remote RDP Logon (T1021.001)</description>
+    <mitre><id>T1021.001</id></mitre>
+  </rule>
+
+  <!-- 100012 - T1136.001 New User -->
+  <rule id="100012" level="12">
+    <if_sid>5502</if_sid>
+    <field name="win.eventdata.TargetUserName" type="pcre2">.+</field>
+    <description>Enterprise: New User Created (T1136.001)</description>
+    <mitre><id>T1136.001</id></mitre>
+  </rule>
+
+  <!-- 100013 - T1098 Admin Escalation -->
+  <rule id="100013" level="15">
+    <if_group>win_security</if_group>
+    <field name="win.eventdata.TargetUserName" type="pcre2">Administrators</field>
+    <description>Enterprise: User added to Admin group (T1098)</description>
+    <mitre><id>T1098</id></mitre>
+  </rule>
+
+  <!-- 100014 - T1003 Mimikatz Command -->
+  <rule id="100014" level="15">
+    <if_group>sysmon_event_1</if_group>
+    <field name="win.eventdata.CommandLine" type="pcre2">sekurlsa::logonpasswords|lsass::dcsync|mimikatz</field>
+    <description>Enterprise: Mimikatz Command Detected (T1003)</description>
+    <mitre><id>T1003</id></mitre>
+  </rule>
+
+  <!-- 100015 - T1562.001 Defender Disable -->
+  <rule id="100015" level="15">
+    <if_group>sysmon_event_1</if_group>
+    <field name="win.eventdata.CommandLine" type="pcre2">Set-MpPreference.*DisableRealtimeMonitoring|WinDefend.*stop|Set-Service.*WinDefend</field>
+    <description>Enterprise: Defender/EDR Tampering (T1562.001)</description>
+    <mitre><id>T1562.001</id></mitre>
+  </rule>
+
+</group>
