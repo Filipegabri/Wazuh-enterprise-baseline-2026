@@ -1,11 +1,12 @@
-# Wazuh Enterprise Baseline 2026 - 15 Regras MITRE ATT&CK
+# Wazuh Enterprise Baseline 2026 - 17 Regras MITRE ATT&CK
 
-> Baseline de detecção usado em SOCs L1/L2 em 2026. 15 regras custom de alta fidelidade cobrindo as principais técnicas de ataque atuais.
+> Baseline de detecção usado em SOCs L1/L2 em 2026. 17 regras custom de alta fidelidade cobrindo as principais técnicas de ataque atuais, incluindo zero-day PHP2Shell de Out/2026.
 
-Autor:Filipegabri | SOC Analyst | Luanda, AO
-Wazuh Version: 4.8+ | MITRE ATT&CK: v14
+**Autor:** Filipe Gabriel | SOC Analyst | Luanda, AO
+**Wazuh Version:** 4.8+ | **MITRE ATT&CK:** v14
+**Última atualização:** 23 Out 2026 - Adicionado PHP2Shell CVE-2026-109618
 
- Tabela de Detecção
+### 🎯 Tabela de Detecção
 
 | Rule ID | Técnica MITRE | O que Detecta | Level |
 | :--- | :--- | :--- | :--- |
@@ -24,8 +25,4 @@ Wazuh Version: 4.8+ | MITRE ATT&CK: v14
 | 100013 | T1098 | Usuário virando Admin | 15 |
 | 100014 | T1003 | Comando Mimikatz - sekurlsa | 15 |
 | 100015 | T1562.001 | Desativando Defender / EDR | 15 |
-
-### 🚀 Instalação
-```bash
-/var/ossec/bin/wazuh-control test config
-/var/ossec/bin/wazuh-control restart
+| **100016**
